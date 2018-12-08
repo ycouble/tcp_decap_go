@@ -4,6 +4,7 @@ import (
     "flag"
     "fmt"
     "log"
+    "strings"
 //    "io"
     "github.com/google/gopacket"
     "github.com/google/gopacket/layers"
@@ -51,24 +52,25 @@ func main() {
     for packet := range source.Packets(){
 	// PacketSource.Packets() returns a chan of max 1000 packets 
 	fmt.Printf("Packet %d - %d Layers\n", pkt, len(packet.Layers()))
-	for i, layer := range packet.Layers(){
-	    fmt.Printf("-- Layer %d: %T\n", i, layer)
+	for _, layer := range packet.Layers(){
+	    fmt.Printf("%s -- ", layer.LayerType())
 	    // Display layer information, for the main layer types
 	    switch layer.LayerType() {
 		case layers.LayerTypeEthernet:
-		    PrintEthInfo(layer)
+		    PrintEthInfo(layer.(*layers.Ethernet))
 		case layers.LayerTypeIPv4:
-		    PrintIPv4Info(layer)
+		    PrintIPv4Info(layer.(*layers.IPv4))
 		case layers.LayerTypeTCP:
-		    PrintTCPInfo(layer)
+		    PrintTCPInfo(layer.(*layers.TCP))
 		case layers.LayerTypeUDP:
-		    PrintUDPInfo(layer)
+		    PrintUDPInfo(layer.(*layers.UDP))
 		default:
-		    fmt.Printf("Layer %s not implemented yet",
+		    fmt.Printf("Layer '%s' not implemented yet\n",
 				layer.LayerType())
 	    }
 	}
 
+	fmt.Printf("\n")
 	// Packet present in data
 	pkt++
 	// Test for -f option
@@ -76,21 +78,45 @@ func main() {
     }
 }
 
-func PrintEthInfo(layer gopacket.Layer) {
-    fmt.Printf("MAC SRC: %s\tMAC DST: %s", layer.SrcMAC, layer.DstMAC)
-    fmt.Printf("EtherType: %s", layer.EthernetType)
+func PrintEthInfo(layer *layers.Ethernet) {
+    fmt.Printf("MAC SRC: %s\tMAC DST: %s\t", layer.SrcMAC, layer.DstMAC)
+    fmt.Printf("EtherType: %s\n", layer.EthernetType)
 }
 
-func PrintIPv4Info(layer layers.LayerTypeIPv4) {
-    fmt.Printf("@IP SRC: %s\t@IP DST: %s", layer.SrcIP, layer.DstIP)
-    fmt.Printf("Protocol: %s", layer.Protocol)
+func PrintIPv4Info(layer *layers.IPv4) {
+    fmt.Printf("@IP SRC: %s\t@IP DST: %s\t", layer.SrcIP, layer.DstIP)
+    fmt.Printf("Protocol: %s\n", layer.Protocol)
 }
 
-func PrintTCPInfo(layer layers.LayerTypeTCP) {
-    fmt.Println("Not Implemented Yet")
+func PrintTCPInfo(layer *layers.TCP) {
+    fmt.Printf("Port SRC: %s\tPort DST: %s\t", layer.SrcPort, layer.DstPort)
+    flags := make([]string, 0, 8)
+    switch {
+	case layer.SYN:
+	    flags = append(flags,"SYN")
+	case layer.ACK:
+	    flags = append(flags,"ACK")
+	case layer.RST:
+	    flags = append(flags,"RST")
+	case layer.PSH:
+	    flags = append(flags,"PSH")
+	case layer.FIN:
+	    flags = append(flags,"FIN")
+	case layer.ECE:
+	    flags = append(flags,"ECE")
+	case layer.URG:
+	    flags = append(flags,"URG")
+	case layer.CWR:
+	    flags = append(flags,"CWR")
+	case layer.NS:
+	    flags = append(flags,"NS")
+    }
+    fmt.Printf("Flags: %s\t", strings.Join(flags, ", "))
+    fmt.Printf("Payload size: %d\n", len(layer.BaseLayer.Payload))
+
 }
 
-func PrintUDPInfo(layer layers.LayerTypeUDP) {
+func PrintUDPInfo(layer *layers.UDP) {
     fmt.Println("Not Implemented Yet")
 }
 
