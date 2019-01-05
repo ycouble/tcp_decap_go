@@ -139,8 +139,8 @@ func ExtractS7VariableReadWrite (fname *string,
 */
 
 type S7Item struct {
-    fname string    // Function
     rname string    // ROSCTR name
+    fname string    // Function
     pduref int	    // PDU identifier
     itemid int	    // Item identifier
     status uint8    // Item Status
