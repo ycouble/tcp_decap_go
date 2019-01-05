@@ -35,3 +35,18 @@ type S7Item struct {
     data string     // Data carried (Hexadecimal representation)
 }
 ```
+
+### Example Output
+For the following packet:
+![packet](http://couble.eu/assets/packet.png)
+
+The programm outputs:
+```
+$ ./tcp_decap_go -r ../../data/s7comm_varservice_libnodavedemo_bench.pcap -d -n 4776
+{fname:ReadVar rname:Job pduref:2350 itemid:0 status:0 dbid:0 area:129 trsize:2 adress:000000 objlen:0 data:}
+{fname:ReadVar rname:Job pduref:2350 itemid:1 status:0 dbid:0 area:131 trsize:2 adress:000000 objlen:0 data:}
+{fname:ReadVar rname:Job pduref:2350 itemid:2 status:0 dbid:0 area:131 trsize:2 adress:000030 objlen:0 data:}
+{fname:ReadVar rname:Job pduref:2350 itemid:3 status:0 dbid:0 area:131 trsize:2 adress:000020 objlen:6 data:}
+{fname:ReadVar rname:Job pduref:2350 itemid:4 status:0 dbid:0 area:131 trsize:2 adress:000020 objlen:0 data:}
+```
+Unused fields are left blank.
