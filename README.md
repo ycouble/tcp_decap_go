@@ -17,3 +17,21 @@ tcp_decap_go -r <filename.pcap> [-f] [-n N] [-d] [-v]
 - -n N enables to only process the N-th packet of the pcap
 - -d Displays the table obtained by the S7 processor (Variable Reads + Writes)
 - -v Displays additional information obtained during the packet dissection
+
+## Output format
+
+```(go)
+type S7Item struct {
+    rname string    // ROSCTR name (e.g. Job or Ack_Data)
+    fname string    // Function name (e.g. Read Var or Write Var)
+    pduref int      // PDU identifier 
+    itemid int      // Item identifier (item number in the PDU)
+    status uint8    // Item Status 
+    dbid int        // Database Identifier
+    area uint8      // Area Identifier
+    trsize int      // Transport size (e.g. 0x04 for BYTE)
+    adress string   // Varaible Adress (Hexadecimal representation)
+    objlen int      // Object length (Size in bytes)
+    data string     // Data carried (Hexadecimal representation)
+}
+```
