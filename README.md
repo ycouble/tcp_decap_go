@@ -9,6 +9,9 @@ The program only treats a few usecases, and makes the following assumptions rega
 5. S7 Variable specification format is always 0x12, with an adress format length of 10
 
 ## Usage
+To build, use `go build`
+
+### CLI Usage
 ```(bash)
 tcp_decap_go -r <filename.pcap> [-f] [-n N] [-d] [-v]
 ```
@@ -17,6 +20,15 @@ tcp_decap_go -r <filename.pcap> [-f] [-n N] [-d] [-v]
 - -n N enables to only process the N-th packet of the pcap
 - -d Displays the table obtained by the S7 processor (Variable Reads + Writes)
 - -v Displays additional information obtained during the packet dissection
+
+### Inside another go package
+**Not tested**
+
+The S7 Processor can be used by calling the following function:
+```(go)
+tcp_decap_go.func ExtractS7VariableReadWrite (fname *string, first *bool, packet_id *int, verbose *bool)
+```
+which returns a slice of tcp_decap_go.S7Item 
 
 ## Output format
 
